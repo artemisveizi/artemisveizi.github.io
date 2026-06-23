@@ -1,0 +1,37 @@
+# Site settings
+title: Artemis Veizi
+author: Artemis Veizi
+email: aveizi@stanford.edu
+description: >-
+  Artemis Veizi — M.S. Computer Science (AI) student at Stanford and Silicon
+  Validation Engineer at Apple. Research and projects in machine learning,
+  AI evaluation, and optimization.
+# When you set up the custom domain artemisveizi.io, change url to https://artemisveizi.io
+url: "https://artemisveizi.github.io"
+baseurl: ""
+
+# Theme
+theme: minima
+minima:
+  skin: classic
+# Social links (minima 2.5.x, as pinned by github-pages, reads these top-level keys)
+github_username: artemisveizi
+linkedin_username: artemisveizi
+
+# Build settings
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Navigation: pages listed in the header, in order
+header_pages:
+  - research-projects.md
+  - cv.md
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor

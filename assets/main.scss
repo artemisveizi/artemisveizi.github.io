@@ -1,0 +1,71 @@
+---
+# Front matter (even if empty) tells Jekyll to process this file.
+---
+
+@import "minima";
+
+// Make the site title (top-left) match the nav link size/weight,
+// instead of minima's oversized 1.625em light heading. Keep minima's
+// tall line-height so it stays vertically aligned with the nav links.
+.site-title {
+  &,
+  &:visited {
+    @include relative-font-size(1.0);
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+}
+
+// Underline the active page in the header (and the title when on Home).
+// Underline the active page in the header (and the title when on Home).
+// Use text-decoration (hugs the text) rather than border-bottom, so the
+// underline sits consistently regardless of each element's line-height.
+.site-nav .page-link.active,
+.site-title.active {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+// On hover, bold the header links instead of minima's default underline
+// (which sits at an inconsistent height). The active tab keeps its underline.
+.site-nav .page-link:hover,
+.site-title:hover {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.site-nav .page-link.active:hover,
+.site-title.active:hover {
+  text-decoration: underline;
+}
+
+// Footer now has only two columns (social icons + tagline). Widen the social
+// column to fill the space the removed email/social columns used to occupy,
+// so the tagline stays out at the right (45%) instead of sliding inward.
+.footer-col-1 {
+  width: -webkit-calc(55% - (#{$spacing-unit} / 2));
+  width:         calc(55% - (#{$spacing-unit} / 2));
+}
+
+// Right-align the tagline so its edge sits flush with the page's right margin.
+.footer-col-3 {
+  text-align: right;
+}
+
+// Featured project shown in its own bordered card, so it stands apart from
+// the bio above and the contact line below without needing horizontal rules.
+.featured-card {
+  border: 1px solid $grey-color-light;
+  border-radius: 20px;
+  padding: $spacing-unit / 2 $spacing-unit;
+  background-color: lighten($grey-color-light, 8%);
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
