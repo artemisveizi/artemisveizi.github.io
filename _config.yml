@@ -23,6 +23,14 @@ markdown: kramdown
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  # Generates /sitemap.xml, which is what you submit to Google Search Console.
+  # On the GitHub Pages supported-plugins list, so Pages runs it server-side.
+  - jekyll-sitemap
+
+# Paste the token from Search Console's "HTML tag" verification method here and
+# jekyll-seo-tag will emit the meta tag. Leave commented until you have it —
+# an empty value renders an empty tag, which fails verification.
+# google_site_verification: "your-token-here"
 
 # Dart Sass (Jekyll 4) warns that @import, lighten()/darken() and slash-division
 # are deprecated. Those all come from inside the minima gem's own stylesheets,
