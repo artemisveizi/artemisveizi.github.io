@@ -4,6 +4,42 @@ title: Research & Projects
 permalink: /research-projects/
 ---
 
+## <a name="contamination"></a>Language Model Benchmark Contamination Leaves a Person-Fit Signature in the Graded Response Matrix
+
+*Under review — AAAI-27*
+
+A benchmark score is trustworthy only if the evaluated model has not trained on the
+test items, yet existing contamination detectors demand privileged access — model
+weights, token log-probabilities, or the training corpus — that a public leaderboard
+entry does not expose. We propose a detector requiring only the *graded response
+matrix*: which items each model answered correctly. Treating contamination as
+psychometric *item preknowledge*, a contaminated model behaves like an aberrant
+test-taker, succeeding on items too difficult for its true ability because it has
+memorized them. Under controlled fine-tuning injection across four base models and
+three benchmarks, contamination separates from both domain-matched and generic benign
+fine-tuning at AUROC 0.94–0.99, and the separation survives when memorization is
+isolated from collateral training damage. The signal is semantic, not verbatim: it
+survives paraphrasing of evaluation items, where accuracy-based detectors fail. A
+signed decomposition of the aberrance extends to the mirror problem of *sandbagging*,
+placing the two failure modes at opposite tails of a single ability–response axis. On
+released models, the detector yields near-zero flags on contamination-resistant
+benchmarks and confirms documented positives, agreeing with a log-probability detector
+that requires strictly more access. Person-fit flags *aberrance*, of which
+contamination is one cause; near-total memorization is absorbed into estimated ability
+and invisible. We therefore position the method as an access-agnostic triage and
+flagging tool, not a standalone classifier.
+
+[Paper (PDF)]({{ '/veizi_contamination_person_fit.pdf' | relative_url }})
+&nbsp;·&nbsp;
+[Supplement (PDF)]({{ '/veizi_contamination_supplement.pdf' | relative_url }})
+&nbsp;·&nbsp;
+[Code](https://github.com/artemisveizi/contamination-person-fit)
+
+&nbsp;
+&nbsp;
+
+---
+
 ## <a name="sandbagging"></a>Person-Fit Statistics as a Black-Box Detector for LLM Sandbagging on Hazardous-Capability Benchmarks
 
 *Stanford CS321M (AI Measurement Science) — Spring 2026*

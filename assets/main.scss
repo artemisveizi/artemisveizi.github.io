@@ -2,7 +2,185 @@
 # Front matter (even if empty) tells Jekyll to process this file.
 ---
 
+// sass:color replaces the deprecated global lighten()/darken() functions.
+// Must precede everything else, including variable declarations.
+@use "sass:color";
+
+// ---------------------------------------------------------------------------
+// Typography: Computer Modern (CMU Serif), self-hosted.
+//
+// Fonts converted from the cm-unicode OpenType files shipped with TeX Live
+// (SIL Open Font License) using pyftsubset, subsetted to Latin, Latin
+// Extended-A, Greek, punctuation, superscripts, letterlike and math ranges.
+// Math symbols CMU Serif lacks (notably U+2113 SCRIPT SMALL L, used as the
+// l*z statistic, and the comparison operators) come from Latin Modern Math
+// (GUST Font License) via unicode-range below — same Computer Modern design
+// lineage, so the join is invisible.
+//
+// WOFF rather than WOFF2 only because the machine that generated these had no
+// brotli module. To shrink them ~25%: pip install brotli, then re-run
+// pyftsubset with --flavor=woff2 and update the format() hints here.
+// ---------------------------------------------------------------------------
+
+// Overrides for minima's defaults. These MUST come before the @import, since
+// minima declares each with !default.
+$base-font-family: "CMU Serif", "Latin Modern Roman", Georgia, "Times New Roman", serif;
+
+// Latin Modern Sans — Computer Modern's own sans-serif sibling (GUST Font
+// License), so headings and chrome stay inside the same design system as the
+// serif body rather than introducing a foreign typeface.
+$sans-font-family: "LM Sans", "CMU Sans Serif", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+// CMU Serif has a small x-height for its nominal size, so minima's 16px reads
+// noticeably smaller than its sans default did. Bump the size, and open up the
+// leading — Computer Modern's thin strokes and long ascenders need the room.
+$base-font-size:   18px;
+$base-line-height: 1.65;
+
 @import "minima";
+
+// --- font files ------------------------------------------------------------
+// url() is relative to this stylesheet (served at /assets/main.css), so these
+// resolve to /assets/fonts/... and stay correct under any baseurl.
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("fonts/cmu-serif-roman.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("fonts/cmu-serif-italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("fonts/cmu-serif-bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("fonts/cmu-serif-bolditalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CMU Typewriter Text";
+  src: url("fonts/cmu-typewriter.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Latin Modern Sans. The italic faces are declared for completeness; browsers
+// only fetch a face when text actually needs it, so unused ones cost nothing.
+@font-face {
+  font-family: "LM Sans";
+  src: url("fonts/lm-sans-regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "LM Sans";
+  src: url("fonts/lm-sans-italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "LM Sans";
+  src: url("fonts/lm-sans-bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "LM Sans";
+  src: url("fonts/lm-sans-bolditalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+// Math and letterlike symbols, layered onto the CMU Serif family for the
+// ranges CMU Serif doesn't cover. Declared after the faces above so it wins
+// for the handful of codepoints that overlap.
+@each $weight, $style in (400 normal, 400 italic, 700 normal, 700 italic) {
+  @font-face {
+    font-family: "CMU Serif";
+    src: url("fonts/lm-math-symbols.woff") format("woff");
+    font-weight: $weight;
+    font-style: $style;
+    unicode-range: U+2100-214F, U+2200-22FF;
+    font-display: swap;
+  }
+}
+
+// Kerning and standard ligatures — Computer Modern's fi/fl matter at this size.
+body {
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+}
+
+// Monospace should be Computer Modern's typewriter, not the system default.
+pre,
+code {
+  font-family: "CMU Typewriter Text", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+// --- serif / sans role split -----------------------------------------------
+// Headings and site chrome (title, nav, footer) in Latin Modern Sans; body
+// prose stays CM Serif. This is the journal convention: long-form text in
+// serif, structure in sans. It matters here because the research page carries
+// full paper abstracts, which read more comfortably set in a serif.
+h1, h2, h3, h4, h5, h6,
+.site-title,
+.site-nav .page-link,
+.site-footer {
+  font-family: $sans-font-family;
+}
+
+// --- heading scale ---------------------------------------------------------
+// minima sizes `.post-content h2` at 36px, but the homepage's "Hi!" is an h2
+// in `layout: home`, which has no .post-content wrapper — so it fell through
+// to the browser's default 1.5em (27px at our base). Research-page project
+// titles were therefore noticeably larger than the homepage heading.
+//
+// Pin both explicitly at the same values rather than leaving either to a UA
+// default, so the two pages can't drift apart again. h3/h4 must come down
+// alongside h2, or an h3 (minima: 29.25px) would outrank its own h2.
+$h2-size: 1.5;    // 27px — matches "Hi!"
+$h3-size: 1.25;   // 22.5px
+$h4-size: 1.1;    // 19.8px
+
+.post-content,
+.home {
+  h2 { @include relative-font-size($h2-size); }
+  h3 { @include relative-font-size($h3-size); }
+  h4 { @include relative-font-size($h4-size); }
+
+  @include media-query($on-laptop) {
+    h2 { @include relative-font-size($h2-size - 0.125); }
+    h3 { @include relative-font-size($h3-size - 0.075); }
+    h4 { @include relative-font-size($h4-size - 0.05); }
+  }
+}
 
 // Make the site title (top-left) match the nav link size/weight,
 // instead of minima's oversized 1.625em light heading. Keep minima's
@@ -16,7 +194,6 @@
   }
 }
 
-// Underline the active page in the header (and the title when on Home).
 // Underline the active page in the header (and the title when on Home).
 // Use text-decoration (hugs the text) rather than border-bottom, so the
 // underline sits consistently regardless of each element's line-height.
@@ -33,6 +210,53 @@
 .site-title:hover {
   text-decoration: none;
   font-weight: 600;
+}
+
+// Bolding on hover makes the text wider, which reflowed the whole header row —
+// the nav is right-floated, so a link growing shoved its neighbours sideways.
+// Fix: reserve each label's *bold* width up front with a hidden ::before copy
+// set at the hover weight. That pins the box, and text-align centres the
+// lighter resting label inside it, so hovering thickens the text symmetrically
+// about its own centre without anything moving.
+//
+// Desktop only: below $on-palm minima turns .page-link into a block inside the
+// dropdown menu, and redefining display here would break that.
+@media screen and (min-width: #{$on-palm + 1}) {
+  .site-title,
+  .site-nav .page-link {
+    &::before {
+      content: attr(data-text);
+      display: block;
+      height: 0;
+      overflow: hidden;
+      visibility: hidden;
+      pointer-events: none;
+      font-weight: 600;
+    }
+  }
+
+  // Nav labels are inline by default, so they need a box that can carry the
+  // reserved width. Centred within it, they thicken symmetrically on hover.
+  .site-nav .page-link {
+    display: inline-block;
+    text-align: center;
+  }
+
+  // The title grows evenly too, but centring the lighter resting label inside
+  // its bold-width box would push it ~5px right, out of line with the body
+  // text below. So pull the box back by half the weight delta: the resting
+  // label lands flush left as before, and the bold then grows equally to both
+  // sides instead of only rightwards.
+  //
+  // The offset is measured from the font files rather than guessed — at 18px,
+  // "Artemis Veizi" sets 100.57px in LM Sans 400 and 110.95px in 700, so half
+  // the 10.39px delta is 5.19px. It is specific to this string, this font and
+  // this size: re-measure if the site title or heading font changes. Getting
+  // it wrong only misaligns the title by a few pixels, nothing structural.
+  .site-title {
+    text-align: center;
+    margin-left: -5.19px;
+  }
 }
 
 .site-nav .page-link.active:hover,
@@ -53,13 +277,303 @@
   text-align: right;
 }
 
+// Footer social icons. minima sets `vertical-align: text-top`, which hangs the
+// icon from the top of the font's ascender box. LM Sans has an unusually tall
+// ascender (1.154em) against a small x-height (0.444em), so the 16px icons
+// ended up sitting 7.7px above the optical centre of the lowercase usernames.
+//
+// Sizing the icon in em and offsetting it to the text's own centre fixes it and
+// stays correct if the font size changes: half the x-height (0.444/2 = 0.222em)
+// minus half the icon height (0.5em) = -0.278em from the baseline.
+.svg-icon {
+  width: 1em;
+  height: 1em;
+  padding-right: 0.35em;
+  vertical-align: -0.278em;
+}
+
+// --- pool table ------------------------------------------------------------
+// Sits past the bottom of the home page. See assets/js/pool.js.
+
+.pool-reveal {
+  margin-top: $spacing-unit * 1.5;
+}
+
+.pool-hint {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  padding: 0.4em 0.9em 0.55em;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: $sans-font-family;
+  font-size: $small-font-size;
+  letter-spacing: 0.04em;
+  // Text is full-strength ink, faded by opacity, so pushing further down reads
+  // as the words *darkening* rather than a grey shifting tone. --reveal is set
+  // by pool.js as the reader scrolls past the end of the page. Scrolling only
+  // darkens it; clicking is what actually opens the table.
+  color: $text-color;
+  opacity: 0;
+  transition: opacity 0.5s ease, letter-spacing 0.4s ease;
+
+  &.is-visible { opacity: calc(0.22 + 0.78 * var(--reveal, 0)); }
+
+  // Hover and keyboard focus both bring it to full strength. Focus matters:
+  // without it someone tabbing here would land on an invisible button.
+  &:hover,
+  &:focus-visible { opacity: 1; }
+
+  &:focus-visible {
+    outline: 1px solid $grey-color;
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  // Fully teased. Since no amount of further scrolling does anything, say so:
+  // solid ink, a complete underline, and a little more tracking so it reads as
+  // an invitation waiting to be taken.
+  &.is-ready {
+    opacity: 1;
+    letter-spacing: 0.08em;
+
+    &::after { opacity: 0.85; }
+  }
+
+  &.is-open { display: none; }
+
+  // A rule that fills left-to-right with the same progress. Opacity alone is
+  // easy to miss; a line that visibly grows is unambiguous feedback.
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0.15em;
+    transform: translateX(-50%);
+    height: 1px;
+    width: calc(var(--reveal, 0) * 78%);
+    background: currentColor;
+    opacity: 0.5;
+    transition: opacity 0.4s ease;
+  }
+}
+
+.pool-hint-arrow {
+  display: inline-block;
+  animation: pool-nudge 1.8s ease-in-out infinite;
+}
+
+@keyframes pool-nudge {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(0.22em); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool-hint-arrow { animation: none; }
+}
+
+// The panel is its own full-viewport space rather than a block in the column,
+// so it breaks out of minima's centred wrapper to the full window width.
+.pool {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  overflow: hidden;
+
+  // No backdrop: the page stays white and the table sits on it, so it reads as
+  // emerging from the page rather than opening a separate dark room.
+
+  // Deliberately not transitioned. Animating the height made the scroll target
+  // move while the page was scrolling toward it, which is what read as clumsy.
+  // The height snaps (invisibly, below the fold) and the eased scroll in
+  // pool.js carries the motion instead.
+  &.is-collapsed {
+    height: 0;
+  }
+
+  &.is-open {
+    height: 100svh;
+    margin-top: $spacing-unit;
+  }
+
+  // Closing is eased, unlike opening. There's no programmatic scroll competing
+  // with it here, and easing the height down means the browser's scroll clamp
+  // happens gradually rather than snapping the page. Declared after .is-open
+  // so it wins at equal specificity.
+  &.is-leaving {
+    height: 0;
+    margin-top: $spacing-unit;
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.pool-stage {
+  position: relative;
+  box-sizing: border-box;
+  // svh rather than vh so mobile browser chrome doesn't crop the table
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  padding: $spacing-unit * 0.5;
+}
+
+.pool-canvas {
+  display: block;
+  // border-radius is set by pool.js on every resize, to exactly the radius the
+  // rail is painted with. Hardcoding it here made the shadow trace a squarer
+  // outline than the table, so the transparent corners showed as pale notches.
+  // Diffuse rather than heavy — on white, a dark shadow reads as grime. This is
+  // what lifts the table off the page.
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.pool-back {
+  position: absolute;
+  top: $spacing-unit * 0.5;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2.4em;
+  height: 2.4em;
+  border: 1px solid $grey-color-light;
+  border-radius: 50%;
+  background: $background-color;
+  color: $grey-color;
+  font-size: $small-font-size;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background: $grey-color-light;
+    border-color: $grey-color;
+    color: $text-color;
+  }
+}
+
+.pool-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1.1em;
+  margin: 0;
+  font-family: $sans-font-family;
+  font-size: $small-font-size;
+  color: $grey-color;
+}
+
+.pool-rerack {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: $grey-color;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+
+  &:hover { color: $text-color; }
+}
+
+// The table settles in as the page glides down: a slow fade with a little
+// upward drift, staggered so the cloth arrives before its controls.
+.pool-canvas,
+.pool-meta,
+.pool-back {
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 1s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.pool-canvas {
+  transform: translateY(22px) scale(0.985);
+  transition-delay: 0.1s;
+}
+
+.pool-meta   { transform: translateY(12px); transition-delay: 0.42s; }
+.pool-back   { transform: translate(-50%, -10px); transition-delay: 0.58s; }
+
+.pool.is-arriving {
+  .pool-canvas { opacity: 1; transform: none; }
+  .pool-meta   { opacity: 1; transform: none; }
+  .pool-back   { opacity: 1; transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool-canvas,
+  .pool-meta,
+  .pool-back {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  .pool-back { transform: translateX(-50%); }
+}
+
+// On a short or narrow screen the caption competes with the table for space.
+@media screen and (max-width: 600px), screen and (max-height: 520px) {
+  .pool-hintline { display: none; }
+}
+
+// --- intro photo -----------------------------------------------------------
+// The heading and bio sit in one column with the photo beside them, and the
+// photo's height matches that column exactly. Because the source is a fixed
+// 3648x4700 rectangle (bottom trimmed, nothing else cropped), matching the
+// height means the *width* is a consequence, not a choice — and the width in
+// turn changes how tall the text wraps. That circular dependency is why
+// assets/js/intro-photo.js resolves it; the width below is the pre-JS fallback.
+.intro {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-unit;
+}
+
+.intro-text {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  > :first-child { margin-top: 0; }
+  > :last-child  { margin-bottom: 0; }
+}
+
+.intro-photo {
+  flex: 0 0 auto;
+  margin: 0;
+  width: 210px;   // replaced by the measured width once JS runs
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+}
+
+// Stacked on a phone: a ~210px column beside 18px serif leaves only a few words
+// per line. The script detects the non-flex display and stops managing width.
+@include media-query($on-palm) {
+  .intro { display: block; }
+
+  .intro-photo {
+    width: 62%;
+    margin: 0 auto $spacing-unit;
+  }
+}
+
 // Featured project shown in its own bordered card, so it stands apart from
 // the bio above and the contact line below without needing horizontal rules.
 .featured-card {
   border: 1px solid $grey-color-light;
   border-radius: 20px;
-  padding: $spacing-unit / 2 $spacing-unit;
-  background-color: lighten($grey-color-light, 8%);
+  // `* 0.5` rather than `/ 2`: Dart Sass deprecated slash-as-division.
+  padding: $spacing-unit * 0.5 $spacing-unit;
+  background-color: color.adjust($grey-color-light, $lightness: 8%);
 
   > :first-child {
     margin-top: 0;

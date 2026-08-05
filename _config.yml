@@ -24,6 +24,18 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
+# Dart Sass (Jekyll 4) warns that @import, lighten()/darken() and slash-division
+# are deprecated. Those all come from inside the minima gem's own stylesheets,
+# which we don't control. quiet_deps silences dependency warnings only —
+# warnings for assets/main.scss still surface.
+sass:
+  quiet_deps: true
+  # minima 2.5 has no @use-compatible entry point — it relies on @import plus
+  # global !default variables — so `@import "minima"` cannot be modernised
+  # without forking the theme. Silence that one deprecation, not the others.
+  silence_deprecations:
+    - import
+
 # Navigation: pages listed in the header, in order
 header_pages:
   - research-projects.md

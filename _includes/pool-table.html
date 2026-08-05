@@ -1,0 +1,35 @@
+{%- comment -%}
+  Pool table, hidden past the bottom of the home page. Scrolling past the end
+  darkens the invitation and fills its underline, but never opens the panel —
+  clicking is the only way in. Once open the page glides down to a full-viewport
+  table; leaving (via the up-arrow, or by scrolling back above it) collapses it
+  again, so it has to be clicked open each time.
+
+  Collapsed and aria-hidden until then, so it stays out of the way of assistive
+  tech and never steals a tab stop.
+{%- endcomment -%}
+
+<div class="pool-reveal">
+  <button type="button" id="pool-hint" class="pool-hint" aria-expanded="false" aria-controls="pool">
+    pool <span class="pool-hint-arrow" aria-hidden="true">&darr;</span>
+  </button>
+
+  <section id="pool" class="pool is-collapsed" aria-hidden="true" aria-label="Pool">
+    <div class="pool-stage">
+      <button type="button" class="pool-back" aria-label="Back to the top of the page">
+        <span aria-hidden="true">&uarr;</span>
+      </button>
+
+      <canvas class="pool-canvas" role="img"
+              aria-label="An interactive pool table. Drag away from the cue ball to aim and set power, then release to shoot."></canvas>
+
+      <p class="pool-meta">
+        <span class="pool-hintline">drag from the cue ball to aim &middot; further out hits harder</span>
+        <span class="pool-status" aria-live="polite"></span>
+        <button type="button" class="pool-rerack">re-rack</button>
+      </p>
+    </div>
+  </section>
+</div>
+
+<script src="{{ '/assets/js/pool.js' | relative_url }}" defer></script>
