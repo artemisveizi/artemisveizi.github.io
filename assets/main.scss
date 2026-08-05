@@ -2,9 +2,13 @@
 # Front matter (even if empty) tells Jekyll to process this file.
 ---
 
-// sass:color replaces the deprecated global lighten()/darken() functions.
-// Must precede everything else, including variable declarations.
-@use "sass:color";
+// NOTE ON SASS DIALECT: this file has to compile under Ruby Sass 3.7, which is
+// what GitHub Pages uses (github-pages 232 -> jekyll 3.10 ->
+// jekyll-sass-converter 1.5.2 -> sass 3.7.4). Pages ignores the Gemfile, so the
+// local Jekyll 4 / Dart Sass toolchain is NOT what ships. Ruby Sass predates the
+// module system, so `@use "sass:color"` and `color.adjust()` are syntax errors
+// there — stick to the global functions (lighten/darken) even though Dart Sass
+// deprecates them. Those deprecations are silenced in _config.yml.
 
 // ---------------------------------------------------------------------------
 // Typography: Computer Modern (CMU Serif), self-hosted.
@@ -126,7 +130,10 @@ $base-line-height: 1.65;
     src: url("fonts/lm-math-symbols.woff") format("woff");
     font-weight: $weight;
     font-style: $style;
-    unicode-range: U+2100-214F, U+2200-22FF;
+    // unquote() so the U+ literals pass straight through. Ruby Sass — which is
+    // what Pages compiles with — has historically misparsed bare unicode-range
+    // values, and this can't be tested locally against Dart Sass.
+    unicode-range: unquote("U+2100-214F, U+2200-22FF");
     font-display: swap;
   }
 }
@@ -573,7 +580,9 @@ $h4-size: 1.1;    // 19.8px
   border-radius: 20px;
   // `* 0.5` rather than `/ 2`: Dart Sass deprecated slash-as-division.
   padding: $spacing-unit * 0.5 $spacing-unit;
-  background-color: color.adjust($grey-color-light, $lightness: 8%);
+  // `lighten()` rather than `color.adjust()`: identical result, but the module
+  // system doesn't exist in the Ruby Sass that GitHub Pages compiles with.
+  background-color: lighten($grey-color-light, 8%);
 
   > :first-child {
     margin-top: 0;
