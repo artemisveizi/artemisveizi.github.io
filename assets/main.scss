@@ -121,6 +121,20 @@ $base-line-height: 1.65;
   font-display: swap;
 }
 
+/* Fraktur, for the pool table's end card only. Subset from yfrak.otf in TeX
+   Live's yfonts-otf (original glyphs Yannis Haralambous 1990, OpenType by Daniel
+   Flipo), SIL Open Font License. Renamed because the OFL reserves the name
+   "yfrak" and a subset counts as a modified version; the licence notice travels
+   inside the file. 33 characters, which is the whole quote and nothing else, so
+   it comes to 14KB and is only fetched if someone clears the table. */
+@font-face {
+  font-family: "Fraktur Quote";
+  src: url("fonts/fraktur-quote.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 // Math and letterlike symbols, layered onto the CMU Serif family for the
 // ranges CMU Serif doesn't cover. Declared after the faces above so it wins
 // for the handful of codepoints that overlap.
@@ -344,6 +358,23 @@ $h4-size: 1.1;    // 19.8px
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
+  /* Width has to be stated, because minima centres this wrapper with auto side
+     margins and an auto margin on a flex item's cross axis switches off stretch.
+     As a flex item it therefore fell back to shrink-to-fit and took its width
+     from the intrinsic width of its contents. Pages of long paragraphs still hit
+     the cap and looked untouched; the CV page, almost entirely one <object> and
+     so contributing no intrinsic width, collapsed to 588px.
+
+     Stated in border-box, which is the whole reason the max-width is restated
+     too. minima's own max-width is a content-box 740px, so a bare `width: 100%`
+     under content-box makes the border-box 100% PLUS the 30px padding either
+     side — invisible on a desktop where max-width clamps it, but on a 390px
+     phone it produced a 420px box and a horizontal scrollbar on every page.
+     Under border-box, `max-width: $content-width` is 800px total, which is the
+     same 740px of content minima intends. */
+  box-sizing: border-box;
+  width: 100%;
+  max-width: $content-width;
 }
 
 // Safe to flex: minima's reset zeroes margin on every block element and styles
@@ -646,4 +677,114 @@ $h4-size: 1.1;    // 19.8px
   > :last-child {
     margin-bottom: 0;
   }
+}
+
+// --- CV --------------------------------------------------------------------
+
+/* The CV is a document, not prose. The 740px measure that suits body text puts a
+   letter page at about 87 DPI, which is legible but mean — so break out of the
+   column to a comfortable reading width, and take the height from the window so a
+   tall screen shows more of the page instead of the same letterbox.
+
+   Sized here rather than with attributes on the <object>. `height="900px"` was
+   never valid: HTML dimension attributes take a bare integer or a percentage, so
+   it only worked at all because browsers are forgiving. */
+.cv-frame {
+  // Same full-bleed as the pool panel — break out of the centred column to the
+  // window, then centre the document inside that.
+  width: 100vw;
+  margin-left: -webkit-calc(50% - 50vw);
+  margin-left: calc(50% - 50vw);
+  display: flex;
+  justify-content: center;
+  /* Gutter so the document never sits flush against the window edge on a screen
+     only a little wider than it. border-box, or the padding would be added on
+     top of the 100vw and put a horizontal scrollbar on the page. */
+  box-sizing: border-box;
+  padding: 0 $spacing-unit * 0.5;
+}
+
+.cv-embed {
+  display: block;
+  width: 100%;
+  max-width: 1000px;
+  height: 85vh;
+  min-height: 620px;
+  border: 1px solid $grey-color-light;
+  border-radius: 3px;
+}
+
+// --- pool: the end card ----------------------------------------------------
+
+/* Shown when every object ball is down, after the Looney Tunes sign-off: an iris
+   opening onto a dark card with the quote lettered on it.
+
+   The iris is a clip-path circle rather than an opacity fade, so before it runs
+   the card is genuinely absent rather than merely transparent. 76% is the number
+   that just covers the panel: a percentage radius resolves against
+   sqrt(w^2 + h^2) / sqrt(2), so covering the corners needs sqrt(2)/2 = 70.7%. */
+.pool-curtain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-unit;
+  background: #0a0d0a;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-clip-path: circle(0%);
+  clip-path: circle(0%);
+  transition: -webkit-clip-path 1.15s cubic-bezier(0.3, 0, 0.2, 1),
+              clip-path 1.15s cubic-bezier(0.3, 0, 0.2, 1),
+              opacity 0.3s ease;
+}
+
+.pool.is-cleared .pool-curtain {
+  opacity: 1;
+  pointer-events: auto;
+  -webkit-clip-path: circle(76%);
+  clip-path: circle(76%);
+}
+
+.pool-quote {
+  margin: 0;
+  padding: 0 $spacing-unit;
+  border: 0;                        // minima gives blockquote a left rule
+  font-family: "Fraktur Quote", "CMU Serif", Georgia, serif;
+  font-style: normal;               // and italics, which Fraktur has no use for
+  // Fluid, because the card is a full viewport and five lines of Fraktur need
+  // the room without overflowing a phone.
+  font-size: -webkit-calc(15px + 0.62vw);
+  font-size: calc(15px + 0.62vw);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  text-align: center;
+  color: #f2ead6;
+}
+
+.pool-again {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  font-family: $sans-font-family;
+  font-size: $small-font-size;
+  letter-spacing: 0.04em;
+  color: rgba(242, 234, 214, 0.62);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+
+  &:hover,
+  &:focus-visible { color: #f2ead6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool-curtain { transition: none; }
 }

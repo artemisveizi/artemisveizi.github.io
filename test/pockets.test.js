@@ -223,4 +223,49 @@ var fin = pl.state();
 ok(fin.balls.filter(function (x) { return x.n === 0; }).length === 1,
    'the cue is back on the table afterwards');
 
+group('the end card');
+/* Driven by potting the last ball with the rest already down, rather than by
+   sinking fifteen in a row: what is under test is the trigger condition, and the
+   potting path is covered above. */
+function potOneWith(alreadyPotted, useCue) {
+  var pl = loadPool();
+  pl.rack();
+  var st = pl.state();
+  st.balls.length = 0;
+  for (var i = 0; i < alreadyPotted; i++) st.potted.push(i + 1);
+  var p = G.POCKETS[4];                       // near side pocket, straight in
+  var b = pl.makeBall(useCue ? 0 : 7, p.x, p.y - p.oy * 20);
+  b.vx = p.ox * 90; b.vy = p.oy * 90;
+  st.balls.push(b);
+  pl.settle(120);
+  return pl.state();
+}
+
+var N = pool.RACK_COUNT;
+ok(N === 15, 'a rack is ' + N + ' object balls');
+
+var s1 = potOneWith(N - 1, false);
+ok(s1.potted.length === N, 'potting the last one makes ' + N);
+ok(s1.cleared === true, 'and the end card fires');
+
+var s2 = potOneWith(N - 2, false);
+ok(s2.potted.length === N - 1, 'one short leaves ' + (N - 1));
+ok(s2.cleared === false, 'and the end card stays down');
+
+// The cue ball is respotted, never counted — it can't be the fifteenth.
+var s3 = potOneWith(N - 1, true);
+ok(s3.potted.length === N - 1, 'a scratch does not add to the potted count');
+ok(s3.cleared === false, 'so scratching on the last ball does not fire the card');
+ok(s3.balls.filter(function (x) { return x.n === 0; }).length === 1, 'cue is respotted');
+
+// Re-racking puts it away.
+var pl2 = loadPool();
+pl2.rack();
+var st2 = pl2.state();
+for (var k = 0; k < N; k++) st2.potted.push(k + 1);
+pl2.settle(1);
+ok(pl2.state().cleared === true, 'card is up with a full rack potted');
+pl2.rack();
+ok(pl2.state().cleared === false, 're-racking puts the card away');
+
 T.report();

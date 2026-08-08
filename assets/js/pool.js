@@ -20,6 +20,8 @@
   var canvas = root.querySelector('.pool-canvas');
   var rerackBtn = root.querySelector('.pool-rerack');
   var status = root.querySelector('.pool-status');
+  var curtain = root.querySelector('.pool-curtain');
+  var againBtn = root.querySelector('.pool-again');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
 
@@ -279,6 +281,10 @@
   // solid / one stripe in the back corners.
   var RACK = [[1], [2, 9], [10, 8, 3], [11, 12, 4, 13], [5, 6, 14, 7, 15]];
 
+  // Derived, so the end card's trigger can't drift out of step with the rack.
+  var RACK_COUNT = 0;
+  for (var ri = 0; ri < RACK.length; ri++) RACK_COUNT += RACK[ri].length;
+
   // ---------------------------------------------------------------- markings
   //
   // Balls roll rather than slide, which needs a real orientation per ball: the
@@ -327,6 +333,7 @@
   // Potted but still being drawn while they drop. Out of play: nothing here
   // collides, and nothing here holds up the settle.
   var sinking = [];
+  var cleared = false;
   var running = false;
   var rafId = null;
   var lastT = 0;
@@ -334,6 +341,7 @@
   function cueSpot() { return { x: W * 0.25, y: H / 2 }; }
 
   function rack() {
+    uncover();
     balls = [];
     potted = [];
     sinking = [];
@@ -579,6 +587,23 @@
       var sp = Math.hypot(b.vx, b.vy);
       if (sp > 1e-9) roll(b, sp, dt);
     }
+  }
+
+  /* Every object ball down. Checked only once the table has settled, so the end
+     card waits for the last ball to finish rolling into the hole rather than
+     appearing over the top of it. The cue ball is not counted — it goes to
+     `scratch` and gets respotted, so it can never be the fifteenth. */
+  function checkCleared() {
+    if (cleared || potted.length < RACK_COUNT) return;
+    cleared = true;
+    root.classList.add('is-cleared');
+    if (curtain) curtain.removeAttribute('aria-hidden');
+  }
+
+  function uncover() {
+    cleared = false;
+    root.classList.remove('is-cleared');
+    if (curtain) curtain.setAttribute('aria-hidden', 'true');
   }
 
   function nearestPocket(b) {
@@ -1263,6 +1288,7 @@
   canvas.style.touchAction = 'none';
 
   if (rerackBtn) rerackBtn.addEventListener('click', function () { rack(); start(); });
+  if (againBtn) againBtn.addEventListener('click', function () { rack(); start(); });
 
   // ---------------------------------------------------------------- loop
 
@@ -1294,6 +1320,7 @@
 
     if (!busy()) {
       if (scratch) respotCue();
+      checkCleared();
       running = false;
       render();
       return;
@@ -1523,8 +1550,12 @@
      a cushion, and no velocity goes NaN. */
   window.__pool = {
     state: function () {
-      return { balls: balls, potted: potted, sinking: sinking, moving: anyMoving(), busy: busy() };
+      return {
+        balls: balls, potted: potted, sinking: sinking,
+        moving: anyMoving(), busy: busy(), cleared: cleared
+      };
     },
+    RACK_COUNT: RACK_COUNT,
     geometry: {
       W: W, H: H, R: R, POCKETS: POCKETS,
       MOUTH_CORNER: MOUTH_CORNER, MOUTH_SIDE: MOUTH_SIDE,
@@ -1549,10 +1580,27 @@
       var cue = cueBall();
       if (cue) { cue.vx = vx; cue.vy = vy; }
     },
+    /* Clear the table on demand, so the end card can be looked at without potting
+       fifteen balls first. Each object ball is put just past its nearest pocket's
+       fall line and nudged in, so it goes down the same path a real pot takes —
+       sink animation, potted count, end card — rather than the card being faked. */
+    finish: function () {
+      for (var i = balls.length - 1; i >= 0; i--) {
+        var b = balls[i];
+        if (b.n === 0) continue;
+        var p = nearestPocket(b);
+        var at = toWorld(p, fallSOf(p) + 0.05, 0);
+        b.x = at.x; b.y = at.y;
+        b.vx = p.ox * 30; b.vy = p.oy * 30;
+      }
+      start();
+      return balls.length;
+    },
     settle: function (maxSeconds) {
       var t = 0, cap = maxSeconds || 60;
       while (busy() && t < cap) { advance(1 / 120); t += 1 / 120; }
       if (scratch) respotCue();
+      checkCleared();
       return t;
     }
   };

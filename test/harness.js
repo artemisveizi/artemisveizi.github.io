@@ -221,6 +221,7 @@ var canvas = elem({
   setPointerCapture: function () {}
 });
 var stage = elem({ clientWidth: 1100, clientHeight: 600 });
+var curtainEl = elem({});
 var statusEl = elem({ textContent: '' });
 
 var root = elem({
@@ -230,6 +231,8 @@ var root = elem({
     if (sel === '.pool-status') return statusEl;
     if (sel === '.pool-rerack') return elem({});
     if (sel === '.pool-back') return elem({});
+    if (sel === '.pool-curtain') return curtainEl;
+    if (sel === '.pool-again') return elem({});
     return null;
   }
 });

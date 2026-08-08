@@ -28,6 +28,23 @@
         <span class="pool-status" aria-live="polite"></span>
         <button type="button" class="pool-rerack">re-rack</button>
       </p>
+
+      {%- comment -%}
+        End card, shown once every object ball is down. Herbert Spencer, off a
+        plaque in a billiard hall. Kept as real text rather than painted onto the
+        canvas so it can be read aloud and selected; aria-hidden until it shows,
+        so it neither announces itself on load nor takes a tab stop.
+      {%- endcomment -%}
+      <div class="pool-curtain" aria-hidden="true">
+        <blockquote class="pool-quote">
+          &ldquo;Sir,&rdquo; said Herbert Spencer,<br>
+          &ldquo;To play a good game of billiards<br>
+          Is the mark of a well-rounded education;<br>
+          But to play too good a game of billiards<br>
+          Is the mark of an ill-spent youth.&rdquo;
+        </blockquote>
+        <button type="button" class="pool-again">rack them up again</button>
+      </div>
     </div>
   </section>
 </div>

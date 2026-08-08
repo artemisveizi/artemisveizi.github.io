@@ -64,3 +64,6 @@ exclude:
   - Gemfile.lock
   - README.md
   - vendor
+  # Node test harnesses — they drive assets/js/pool.js headlessly and have no
+  # business being served. Without this Jekyll copies them into _site.
+  - test
