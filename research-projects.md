@@ -31,7 +31,7 @@ flagging tool, not a standalone classifier.
 
 [Paper (PDF)]({{ '/veizi_contamination_person_fit.pdf' | relative_url }})
 &nbsp;·&nbsp;
-[Supplement (PDF)]({{ '/veizi_contamination_supplement.pdf' | relative_url }})
+[Supplement (PDF)]({{ '/files/veizi-contamination-supplement.pdf' | relative_url }})
 &nbsp;·&nbsp;
 [Code](https://github.com/artemisveizi/contamination-person-fit)
 
@@ -100,7 +100,7 @@ indicate that reinforcement learning algorithms could improve network performanc
 over traditional buffer management schemes, and warrant further exploration of
 reinforcement learning solutions to the buffer management problem.
 
-[Read the thesis (PDF)]({{ '/Veizi_Artemis_Thesis.pdf' | relative_url }})
+[Read the thesis (PDF)]({{ '/files/veizi-thesis.pdf' | relative_url }})
 
 &nbsp;
 &nbsp;
