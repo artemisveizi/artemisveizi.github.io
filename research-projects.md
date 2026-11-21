@@ -35,7 +35,7 @@ reinforcement learning solutions to the buffer management problem.
 ## Other Projects
 
 ### Person-Fit Statistics for Sandbagging Detection
-*Stanford CS321M — Spring 2026*
+*Stanford CS321M — Spring 2026*&nbsp;&nbsp;
 Can a tool from educational testing catch a language model that is deliberately
 underperforming? Person-fit statistics flag test-takers whose pattern of right and
 wrong answers doesn't match their overall ability; I applied them to models answering
@@ -43,20 +43,20 @@ hazardous-knowledge benchmark questions.
 [Code](https://github.com/artemisveizi/sandbagging)
 
 ### Person-Fit Statistics for Benchmark Contamination
-*2026*
+*Extension — Summer 2026*&nbsp;&nbsp;
 The mirror question: can the same statistics flag a model that has memorized a
 benchmark's test questions, using only which questions it got right?
 
 ### Cold-Start Predictive Evaluation on AI Benchmarks
-*Stanford CS321M — 2026*
+*Stanford CS321M — 2026*&nbsp;&nbsp;
 Predicting model performance on AI benchmarks under cold-start conditions, where
 little or no prior evaluation data is available.
 [Code](https://github.com/artemisveizi/cs321m-prediction-project)
 
 ### Bayesian Marathon Time Prediction
-*Stanford CS109 — 2026*
+*Stanford CS109 — 2026*&nbsp;&nbsp;
 A Bayesian approach to predicting marathon finishing times from training and race
-data.
+data. Some would say...better than Strava?
 [Code](https://github.com/artemisveizi/bayesian-marathon)
 
 &nbsp;
