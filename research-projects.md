@@ -4,81 +4,6 @@ title: Research & Projects
 permalink: /research-projects/
 ---
 
-## <a name="contamination"></a>Language Model Benchmark Contamination Leaves a Person-Fit Signature in the Graded Response Matrix
-
-*Under review — AAAI-27*
-
-A benchmark score is trustworthy only if the evaluated model has not trained on the
-test items, yet existing contamination detectors demand privileged access — model
-weights, token log-probabilities, or the training corpus — that a public leaderboard
-entry does not expose. We propose a detector requiring only the *graded response
-matrix*: which items each model answered correctly. Treating contamination as
-psychometric *item preknowledge*, a contaminated model behaves like an aberrant
-test-taker, succeeding on items too difficult for its true ability because it has
-memorized them. Under controlled fine-tuning injection across four base models and
-three benchmarks, contamination separates from both domain-matched and generic benign
-fine-tuning at AUROC 0.94–0.99, and the separation survives when memorization is
-isolated from collateral training damage. The signal is semantic, not verbatim: it
-survives paraphrasing of evaluation items, where accuracy-based detectors fail. A
-signed decomposition of the aberrance extends to the mirror problem of *sandbagging*,
-placing the two failure modes at opposite tails of a single ability–response axis. On
-released models, the detector yields near-zero flags on contamination-resistant
-benchmarks and confirms documented positives, agreeing with a log-probability detector
-that requires strictly more access. Person-fit flags *aberrance*, of which
-contamination is one cause; near-total memorization is absorbed into estimated ability
-and invisible. We therefore position the method as an access-agnostic triage and
-flagging tool, not a standalone classifier.
-
-[Paper (PDF)]({{ '/veizi_contamination_person_fit.pdf' | relative_url }})
-&nbsp;·&nbsp;
-[Supplement (PDF)]({{ '/files/veizi-contamination-supplement.pdf' | relative_url }})
-&nbsp;·&nbsp;
-[Code](https://github.com/artemisveizi/contamination-person-fit)
-
-&nbsp;
-&nbsp;
-
----
-
-## <a name="sandbagging"></a>Person-Fit Statistics as a Black-Box Detector for LLM Sandbagging on Hazardous-Capability Benchmarks
-
-*Stanford CS321M (AI Measurement Science) — Spring 2026*
-
-Sandbagging is a class of deceptive behavior in which LLMs deliberately
-underperform on an evaluation. This is a central concern in pre-deployment
-testing for frontier models (van der Weij et al., 2024; Greenblatt et al.,
-2024), as misaligned models may underperform selectively on items or benchmarks
-intended to test for hazardous behavior, preventing model developers from
-adequately mitigating these behaviors. Published sandbagging detectors largely
-require access to model internals, like hidden-state activations (Boxo et al.,
-2025) or weight-level perturbation (Tice et al., 2024); this level of access is
-not available to third-party evaluators of closed-weight models, motivating the
-need for black-box detection methods. We treat sandbagging as a classical
-psychometric *person-fit* problem and ask whether ℓ\*z, H^T, and U3 detect three
-different sandbagging conditions on the WMDP benchmark (bio, cyber, chem):
-uniform prompted sandbagging, selective-target prompted sandbagging, and UK
-AISI's fine-tuned Model Organisms with a deployment-context trigger. Across N =
-17 open-weight 3–9B baseline models, uniform prompted sandbagging is detected at
-near-ceiling (AUROC = 0.92–0.99); leave-one-model-out (LOMO) detection of the
-AISI fine-tuned MOs reaches AUROC = 0.97 on cyber, 0.91 on chem (p = 0.004), and
-0.88 on bio (p = 0.009). We show that person-fit statistics retain discriminative
-power above accuracy alone (ΔAUROC = +0.06 to +0.12); however, the same
-statistics flag two non-sandbagging baseline models (DeepSeek-7B,
-Qwen2.5-7B-Instruct) as |z| > 3 outliers under normal conditions, attributable to
-a pretrained letter bias and an inference-pipeline artifact, respectively.
-Person-fit statistics detect *aberrance*; sandbagging is one of several possible
-mechanisms that produce aberrant response patterns. We argue for the method as a
-triage and flagging tool, not a standalone classifier, and supply a reproducible
-torch\_measure-based pipeline.
-
-[Paper (PDF)]({{ '/aveizi_CS321M_Final_Project.pdf' | relative_url }})
-&nbsp;·&nbsp;
-[Code](https://github.com/artemisveizi/sandbagging)
-
-&nbsp;
-&nbsp;
-
----
 
 ## Towards Machine Learning for Network Optimization — Buffer Sizing via Reinforcement Learning
 
@@ -108,6 +33,19 @@ reinforcement learning solutions to the buffer management problem.
 ---
 
 ## Other Projects
+
+### Person-Fit Statistics for Sandbagging Detection
+*Stanford CS321M — Spring 2026*
+Can a tool from educational testing catch a language model that is deliberately
+underperforming? Person-fit statistics flag test-takers whose pattern of right and
+wrong answers doesn't match their overall ability; I applied them to models answering
+hazardous-knowledge benchmark questions.
+[Code](https://github.com/artemisveizi/sandbagging)
+
+### Person-Fit Statistics for Benchmark Contamination
+*2026*
+The mirror question: can the same statistics flag a model that has memorized a
+benchmark's test questions, using only which questions it got right?
 
 ### Cold-Start Predictive Evaluation on AI Benchmarks
 *Stanford CS321M — 2026*

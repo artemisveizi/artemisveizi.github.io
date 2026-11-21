@@ -28,33 +28,6 @@ I'm an M.S. student in Computer Science (Artificial Intelligence) at Stanford Un
 &nbsp;
 &nbsp;
 
-## Featured Work
-
-<div class="featured-card" markdown="1">
-
-### Language Model Benchmark Contamination Leaves a Person-Fit Signature
-
-*Under review — AAAI-27*
-
-A benchmark score is trustworthy only if the evaluated model has not trained on the
-test items, yet existing contamination detectors demand privileged access — model
-weights, token log-probabilities, or the training corpus — that a public leaderboard
-entry does not expose. We propose a detector requiring only the *graded response
-matrix*: which items each model answered correctly. Treating contamination as
-psychometric *item preknowledge*, a contaminated model behaves like an aberrant
-test-taker, succeeding on items too difficult for its true ability because it has
-memorized them.
-
-[Take a look &rarr;]({{ '/research-projects/#contamination' | relative_url }})
-&nbsp;·&nbsp;
-[Paper (PDF)]({{ '/veizi_contamination_person_fit.pdf' | relative_url }})
-&nbsp;·&nbsp;
-[Code](https://github.com/artemisveizi/contamination-person-fit)
-
-</div>
-
-&nbsp;
-&nbsp;
 
 See my [research &amp; projects]({{ '/research-projects/' | relative_url }}) or
 read my [CV]({{ '/cv/' | relative_url }}). You can reach me at
