@@ -2,9 +2,8 @@
  * Intro photo sizing.
  *
  * The photo beside the intro has to be exactly as tall as the heading-plus-bio
- * column next to it. Its aspect ratio is fixed (the source is 3648x4706 — 5%
- * trimmed off the top and 9% off the bottom, nothing else cropped), so matching
- * the height fixes the width too.
+ * column next to it. Its aspect ratio is fixed (3648x4706), so matching the
+ * height fixes the width too.
  *
  * That can't be expressed in CSS, because the dependency is circular: a wider
  * photo leaves a narrower text column, which wraps to more lines, which is

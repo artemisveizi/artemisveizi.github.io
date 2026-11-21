@@ -238,12 +238,11 @@ for (var q = 0; q < 40; q++) {
 ok(badFrames === 0, badFrames + ' of 40 random frames mismapped');
 
 group('markings hold their projected size head-on');
-/* A ball facing the camera must look exactly like the old flat renderer, or the
-   rolling work has quietly restyled every ball on the table. */
+/* Head-on, each marking's projected radius is its cap's sine: the band reaches
+   0.54pr either side of centre and the number patch 0.44pr. */
 var ball = pool.makeBall(9, 50, 25);
 probe(ball);
 var pxc = ctx.__px, pyc = ctx.__py, prc = ctx.__pr;
-// Band half-width was a fillRect of 0.54*pr either side of centre.
 ok(ctx.colorAt(pxc, pyc + prc * 0.50) === '#f9f7ef' ||
    ctx.colorAt(pxc, pyc + prc * 0.50) === '#e8b427',
    'inside the band at 0.50pr is stripe or number patch');

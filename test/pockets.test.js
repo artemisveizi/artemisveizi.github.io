@@ -80,9 +80,8 @@ G.POCKETS.forEach(function (p, i) {
 
 group('mouth probe: escape, and how often a ball actually drops');
 /* Fire PARALLEL to each pocket's bisector from a measured lateral offset, so the
-   offset survives all the way to the mouth. Aiming at the pocket point instead —
-   which an earlier version of this test did — makes every shot converge to dead
-   centre and the offsets do nothing, which is how 504/504 came to pot.
+   offset survives all the way to the mouth. Aiming at the pocket point instead
+   would make every shot converge to dead centre and the offsets do nothing.
 
    Two things are being checked. Nothing may ever leave the table, at any offset
    or speed. And the pot rate across the offsets is the feel number: a regulation

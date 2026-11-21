@@ -137,10 +137,10 @@ prints the live URL.
 - [ ] Live homepage renders: intro photo beside the text at matched height,
       Computer Modern body type, sans headings.
 - [ ] `https://artemisveizi.github.io/assets/main.css` loads and contains
-      `@font-face` rules (13 of them) and `.pool` rules.
-- [ ] All five WOFF fonts and both `artemis-thesis` images return 200.
+      `@font-face` rules (14 of them) and `.pool` rules.
+- [ ] All 11 WOFF fonts under `assets/fonts/` and both `artemis-thesis` images return 200.
 - [ ] `/sitemap.xml` and `/robots.txt` still generate.
-- [ ] `/research-projects/` renders, and both paper PDFs open.
+- [ ] `/research-projects/` renders, and the thesis PDF opens.
 - [ ] Scroll to the bottom of the homepage: `pool ↓` appears, darkens as you
       keep scrolling, and opens the table on click.
 - [ ] Compare against a local `bundle exec jekyll build` — output should now be
@@ -193,18 +193,25 @@ then remove `Gemfile.lock` from `.gitignore` and commit it. The
 Tradeoff: reproducible builds, but you then have to run `bundle update`
 deliberately to get security patches.
 
-**Run the test suites in CI.** Three node harnesses were written for the
-JavaScript but live in `/tmp` and are not in the repo:
+**Run the test suites in CI.** `test/` holds node harnesses that stub a
+minimal DOM and drive the real shipped `assets/js/pool.js`, needing only
+`node` — no framework, no dependencies:
 
-- physics/geometry of the pool table (16 assertions)
-- the reveal/collapse state machine (20 assertions)
-- intro-photo height-matching convergence (21 assertions)
+- `test/roll.test.js` — rack/frame invariants, rolling, ball texture mapping
+- `test/pockets.test.js` — pocket geometry, sinking, scratches, the end card
 
-They stub a minimal DOM and drive the real shipped files, needing only `node` —
-no test framework. If you want them, they would need recreating under something
-like `test/`, plus a step in the workflow. Worth it mainly if the pool table or
-intro sizing gets edited again; they caught several real bugs, including a
-pocket-escape bug and an unreachable collapse condition.
+`sh test/run.sh` runs them all and exits non-zero on any failure, so adding
+them to CI is one step in the `build` job, before the Jekyll build:
+
+```yaml
+      - name: Test
+        run: sh test/run.sh
+```
+
+(`ubuntu-latest` ships with `node`.) Two earlier harnesses — the pool
+reveal/collapse state machine and the intro-photo height-matching convergence
+— were never brought into the repo. Worth recreating only if that code gets
+edited again.
 
 ## Things that will not change
 

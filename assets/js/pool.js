@@ -1,8 +1,8 @@
 /*
  * Pool table.
  *
- * Hidden below the bottom of the home page: scrolling to the end reveals a
- * "keep going" prompt, and pushing past it expands the table.
+ * Hidden below the bottom of the home page: scrolling to the end darkens a
+ * "pool" prompt, and clicking it expands the table.
  *
  * Vanilla JS, no dependencies — GitHub Pages serves this as a static file.
  *
@@ -60,18 +60,13 @@
   /* Shelf: how far past the nose line a ball's centre has to travel before it
      drops. This is the whole of a pocket's stringency, and the reason a
      regulation table refuses shots a bar table accepts. 1 3/4in at a corner is
-     the WPA figure; sides are cut with almost none.
-
-     It replaced a plain capture radius measured from the pocket point, which had
-     no notion of direction at all: a ball still out on the cloth was inside it,
-     and a ball drifting along the rail past a pocket got taken just the same.
-     That was the "sucked in" feel. */
+     the WPA figure; sides are cut with almost none. */
   var SHELF_CORNER = 1.75;
   var SHELF_SIDE = 0.35;
 
   /* The cushion nose, as a peg a ball can rattle off. Without this there is
      nothing in the mouth to refuse a ball: the cushion is cut away there, so
-     everything that reached the gap used to drop. The clean gap left for a
+     everything that reached the gap would drop. The clean gap left for a
      ball's centre between two nose pegs is mouth/2 - R - NOSE_R, which comes to
      +-0.775in at a corner. */
   var NOSE_R = 0.35;
@@ -96,19 +91,13 @@
   // How long a potted ball goes on being drawn while it drops.
   var SINK_TIME = 0.42;
 
-  // Rolling resistance on cloth. Real billiard cloth gives a rolling ball about
-  // 4-10 in/s^2 (mu_roll ~= 0.01 against g = 386 in/s^2), and 9 sat at the top
-  // of that band: 42 was far too draggy, 7 let balls run too freely, 11 was
-  // slightly heavy.
+  // Rolling resistance on cloth, in in/s^2. Real cloth gives about 4-10
+  // (mu_roll ~= 0.01 against g = 386 in/s^2); 13 is deliberately over-damped,
+  // because visible spin makes a long settle read as balls refusing to stop. A
+  // medium shot settles in about 5.3s.
   //
-  // Raised past that to 13, deliberately over-damped, once the balls started
-  // visibly rolling. Spin makes duration legible in a way sliding did not — the
-  // same 7 seconds that passed unnoticed read as balls refusing to stop. A
-  // medium shot now settles in 5.3s rather than 6.8s.
-  //
-  // The wait is object balls still running, not a slow crawl at the end:
-  // raising SLEEP_SPEED to 1.5 or 2.5 changes total settle time by under 0.1s,
-  // so it is not the lever it looks like. Deceleration is.
+  // Deceleration is the lever for settle time, not SLEEP_SPEED: raising that to
+  // 1.5 or 2.5 changes total settle time by under 0.1s.
   var ROLL_DECEL = 13;
   var BALL_E = 0.95;
   var CUSHION_E = 0.75;
@@ -140,8 +129,8 @@
   /* Every pocket test happens in the pocket's own frame: s runs outward along its
      bisector from the pocket point, u runs across the mouth. Reducing a ball's
      position to (s, u) is what makes "has it crossed the shelf, and is it inside
-     the mouth" expressible at all — the old radius test could not tell a ball
-     heading in from one drifting past. */
+     the mouth" expressible at all, and is what tells a ball heading in from one
+     drifting past. */
   function toLocal(p, x, y) {
     var dx = x - p.x, dy = y - p.y;
     return { s: dx * p.ox + dy * p.oy, u: dx * -p.oy + dy * p.ox };
@@ -161,8 +150,7 @@
 
   /* Distance along a rail from the pocket point to the cushion nose. At a corner
      the two noses are mouth apart across the diagonal, which puts each of them
-     mouth/sqrt(2) along its own rail — further out than the old code cut the
-     cushion, which is why the rubber used to reach into the mouth. */
+     mouth/sqrt(2) along its own rail. */
   function railGapOf(p) { return p.corner ? mouthOf(p) * Math.SQRT2 : mouthOf(p); }
 
   function facingRad() { return JAW_ANGLE * Math.PI / 180; }
@@ -170,38 +158,15 @@
   /* How far along the rail the facing travels in crossing the cushion's depth. At
      45deg that is the depth itself.
 
-     The direction matters and used to be inverted: the nose is the closest point
+     The direction matters: the nose is the closest point
      on the cushion to the pocket, and the facing rakes AWAY from the pocket going
      back into the rubber, so the back edge is inset from the face. */
   function setbackOf() { return CUSH / Math.tan(facingRad()); }
 
-  /* The pocket opening is drawn from the NOSE line, spanning nose to nose, and the
-     drop — the part that is actually a hole — from the fall line.
-
-     Getting this wrong is what made the corners look sealed. Drawing only from
-     the fall line leaves the stretch of mouth between the noses and the drop
-     rendered as bare rail: the opening is 1.75in of shelf deep at a corner, so
-     most of what should be an open mouth came out as wood, and the pocket read as
-     something a ball could not possibly enter.
-
-     Drawn in three passes instead, which needs no clipping and no separate shelf
-     shape:
-
-       1. the opening, dark, from the nose line — so the mouth is open all the way
-          across, including the part that runs under the rail;
-       2. the bed cloth over it, which paints back exactly the part of the opening
-          that lies on the playing surface — and that IS the shelf;
-       3. the drop, dark again, from the fall line out.
-
-     What survives is the opening minus the shelf, which is what you see looking
-     down at a real pocket. */
   /* The opening, as an oval whose rim passes through both cushion noses.
 
      Put the rim through the two nose pegs and the jaw tips land on its edge for
-     nothing, which is what makes this shape right rather than merely tidy. Earlier
-     goes drew a trapezoid — straight sides, flat back — which stayed blocky however
-     the corners were rounded, because straight sides and a flat back is what it
-     was.
+     nothing, which is what makes this shape right rather than merely tidy.
 
      An ellipse rather than a circle: a true circle reads as a hole drilled in the
      table, where a real pocket runs a little deeper than it is wide and widens
@@ -268,8 +233,8 @@
 
   // Ball colours. The blue (2/10) and purple (4/12) are deeper than a real set
   // would be: against blue cloth they are hue-adjacent, so hue alone can't
-  // separate them and they need the luminance gap instead. At their usual
-  // values they measured 1.09:1 and 1.03:1 against the bed — invisible.
+  // separate them and they need the luminance gap instead. At standard values
+  // they would sit at 1.09:1 and 1.03:1 contrast against the bed — invisible.
   var COLORS = {
     1: '#e8b427', 2: '#152c6b', 3: '#c0392b', 4: '#4a1d78',
     5: '#e0762a', 6: '#1c7a4a', 7: '#7d3b2e', 8: '#18191b',
@@ -304,8 +269,8 @@
   // a real ball. The glyph's up is -S and its right is S x A, which is what
   // makes the number read upright when the stripe lies horizontal.
 
-  // Cap sizes as sines of their angular radius. The values are the projected
-  // radii the flat version drew, so a ball facing the camera is unchanged.
+  // Cap sizes as sines of their angular radius — which is also each cap's
+  // projected radius, as a fraction of the ball's, on a ball facing the camera.
   var NUM_SIN = 0.44;                                   // number circle, ~26deg
   var NUM_COS = Math.sqrt(1 - NUM_SIN * NUM_SIN);
   var BAND_SIN = 0.54;                                  // stripe half-width, ~33deg
@@ -472,10 +437,9 @@
     }
 
     /* Cushion noses, as pegs. These are what make a pocket refusable: across a
-       mouth the cushion is cut away, so before this there was nothing to strike
-       and anything that reached the gap went in. A ball clipping a nose now
-       deflects off it and can rattle in the jaws or come back out onto the
-       cloth, which is most of what "too easy" was about.
+       mouth the cushion is cut away, so without them there is nothing to strike
+       and anything that reaches the gap goes in. A ball clipping a nose deflects
+       off it and can rattle in the jaws or come back out onto the cloth.
 
        They also seal the mouth against escape. Past the nose line a ball can only
        be beyond the mouth laterally by having gone through a peg, and a peg
@@ -616,8 +580,7 @@
   }
 
   /* A potted ball leaves play at once — it stops colliding, and stops holding up
-     the settle — but goes on being drawn while it rolls in. Vanishing the instant
-     it crossed a line was the jarring part.
+     the settle — but goes on being drawn while it rolls in.
 
      It carries on down the bisector at full spin and full size, and leaves by
      going under: it is drawn clipped to the open part of the table, so crossing
@@ -666,7 +629,7 @@
 
   /* Fit the table into whatever box the stage gives us, honouring both
      dimensions. In the full-screen panel the limiting axis is usually height,
-     so sizing off width alone (as the inline version did) would overflow. */
+     so sizing off width alone would overflow. */
   function resize() {
     var stage = root.querySelector('.pool-stage');
     if (!stage) return;
@@ -793,16 +756,18 @@
     ctx.fill();
   }
 
-  /* Pockets, shaped per class rather than drawn as one circle apiece. A corner
-     pocket's hole runs away into the corner along the diagonal; a side pocket's
-     runs straight out under the rail, and is cut wider. Both are capsules — a
-     mouth wide, and deeper than they are wide — which is what makes a hole read
-     as somewhere a ball goes rather than a dot painted on the cloth.
+  /* Pockets are drawn in three passes, which needs no clipping and no separate
+     shelf shape:
 
-     The gradient runs along the throat, lightest at the mouth where the cloth
-     still catches light and black at the back. That is also what a sinking ball
-     descends into: it is drawn over this, so the darkening it picks up on the
-     way down matches the hole it is going into. */
+       1. the opening (see pocketOval), dark, from the nose line — so the mouth
+          is open all the way across, including the part under the rail;
+       2. the bed cloth over it, which paints back exactly the part of the opening
+          that lies on the playing surface — and that IS the shelf;
+       3. the drop, dark again, from the fall line out.
+
+     What survives is the opening minus the shelf, which is what you see looking
+     down at a real pocket. The fill runs along the throat, lightest at the mouth
+     where the cloth still catches light and black at the back. */
   // Pass 1: the opening, from the nose line, so the mouth is open nose to nose.
   function drawPocketOpenings() {
     for (var i = 0; i < POCKETS.length; i++) {
@@ -872,15 +837,8 @@
     }
   }
 
-  /* Cushions as separate runs between the pocket noses, each end cut at its own
-     pocket's regulation facing angle — 26deg off the rail at a corner, 38deg at a
-     side, derived from the WPA figures for the angle between a pocket's facings.
-
-     The sense of that cut matters and used to be inverted: the nose is the
-     closest point on the cushion to the pocket, and the facing rakes AWAY from
-     the pocket as it goes back into the rubber, so the back edge is inset from
-     the face. Drawn the other way round the rubber appeared to reach into the
-     mouth, which is part of why the pockets read as the wrong shape. */
+  /* Cushions as separate runs between the pocket noses, each end cut back at
+     JAW_ANGLE. See setbackOf for which way the cut runs. */
   function drawCushions() {
     // Each rail, as the pockets standing along it in order.
     var rails = [
@@ -1093,10 +1051,9 @@
   }
 
   function drawBall(b) {
-    /* A ball on its way into a pocket keeps every marking and keeps turning. All
-       that changes is that it shrinks, as anything falling away from the camera
-       does, and goes dark as the hole closes over it — so the same code draws a
-       ball in play and a ball two thirds gone. */
+    /* A ball on its way into a pocket keeps every marking, keeps turning, and
+       stays full size. All that changes is that it goes dark as it enters the
+       hole — so the same code draws a ball in play and a ball two thirds gone. */
     var q = sunk(b);
     var px = u(b.x), py = u(b.y), pr = u(R);
     var color = b.n === 0 ? IVORY : COLORS[b.n];
@@ -1293,9 +1250,8 @@
   // ---------------------------------------------------------------- loop
 
   /* Advance the simulation by dt, split into substeps small enough that no
-     ball travels more than a third of its radius in one tick. At the old fixed
-     1/600s a 340 in/s break moved 0.57" per step — half a ball radius — which
-     is enough to clip a contact or slip through a pocket mouth. */
+     ball travels more than a third of its radius in one tick. Any coarser and a
+     hard break can clip a contact or slip through a pocket mouth. */
   function advance(dt) {
     var maxSp = 0;
     for (var i = 0; i < balls.length; i++) {
@@ -1353,11 +1309,10 @@
   // first frame and close it again before the page had travelled anywhere.
   var settling = false;
 
-  /* Eased scroll. Native `behavior: smooth` is fast and its duration can't be
-     set, which is most of why the reveal felt abrupt — and animating the
-     panel's height at the same time made the target move while the scroll was
-     chasing it. Here the height is committed instantly (invisible, since the
-     panel is below the fold) and this glide is the only motion. */
+  /* Eased scroll, rather than native `behavior: smooth`, whose duration can't be
+     set. The panel's height is committed instantly (invisible, since the panel
+     is below the fold) and this glide is the only motion, so the target never
+     moves while the scroll is chasing it. */
   function glideTo(targetY, duration, done) {
     var startY = window.scrollY;
     var dy = targetY - startY;
@@ -1515,8 +1470,8 @@
       if (settling) return;
       /* Close once the table is mostly gone rather than entirely gone. The
          panel is a full viewport tall and there is usually less page than that
-         above it, so "entirely below the viewport" is unreachable by scrolling
-         and only the back button ever fired. Its top edge dropping past the
+         above it, so "entirely below the viewport" is unreachable by
+         scrolling. Its top edge dropping past the
          middle of the screen means the reader has clearly left. */
       var top = root.getBoundingClientRect().top;
       if (top > window.innerHeight * 0.45) collapse();
