@@ -13,12 +13,23 @@ I'm an M.S. student in Computer Science (Artificial Intelligence) at Stanford Un
 </div>
 
 <figure class="intro-photo">
-  <picture>
-    <source srcset="{{ '/assets/img/artemis-thesis.webp' | relative_url }}" type="image/webp">
-    <img src="{{ '/assets/img/artemis-thesis.jpg' | relative_url }}"
-         width="1600" height="2064" decoding="async"
-         alt="Artemis Veizi holding her bound Princeton senior thesis, &ldquo;Towards Machine Learning for Network Optimization: Buffer Sizing via Reinforcement Learning&rdquo;, beside the Princeton tiger statue.">
-  </picture>
+  <button type="button" class="photo-flip" aria-pressed="false">
+    <span class="photo-card">
+      <span class="photo-face photo-front">
+        <picture>
+          <source srcset="{{ '/assets/img/artemis-thesis.webp' | relative_url }}" type="image/webp">
+          <img src="{{ '/assets/img/artemis-thesis.jpg' | relative_url }}"
+               width="1600" height="2064" decoding="async"
+               alt="Artemis Veizi holding her bound Princeton senior thesis, &ldquo;Towards Machine Learning for Network Optimization: Buffer Sizing via Reinforcement Learning&rdquo;, beside the Princeton tiger statue.">
+        </picture>
+      </span>
+      <span class="photo-face photo-back" aria-hidden="true">
+        <img src="{{ '/assets/img/artemis-mountain.jpg' | relative_url }}"
+             width="1588" height="2048" decoding="async"
+             alt="Artemis Veizi smiling in a red hooded down jacket on a snowy mountain ridge under a clear blue sky.">
+      </span>
+    </span>
+  </button>
 </figure>
 
 </div>

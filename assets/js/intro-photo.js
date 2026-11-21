@@ -1,5 +1,5 @@
 /*
- * Intro photo sizing.
+ * Intro photo: sizing, and turning it over.
  *
  * The photo beside the intro has to be exactly as tall as the heading-plus-bio
  * column next to it. Its aspect ratio is fixed (3648x4706), so matching the
@@ -10,6 +10,9 @@
  * taller, which asks for a wider photo. Flexbox resolves main-axis widths
  * before cross-axis heights, so aspect-ratio alone can't close the loop.
  * Iterating to a fixed point here can.
+ *
+ * The photo is two-sided (see .photo-flip in main.scss). Both faces share the
+ * same frame, so flipping never touches the sizing.
  */
 (function () {
   'use strict';
@@ -20,7 +23,23 @@
   var photo = intro.querySelector('.intro-photo');
   if (!text || !photo) return;
 
-  var RATIO = 3648 / 4706;     // width / height of the trimmed source
+  var flip = photo.querySelector('.photo-flip');
+  if (flip) {
+    // Only the face turned toward the viewer is exposed, so the button's
+    // accessible name is the alt text of the photo actually showing.
+    var front = flip.querySelector('.photo-front');
+    var back = flip.querySelector('.photo-back');
+    flip.addEventListener('click', function () {
+      var on = flip.classList.toggle('is-flipped');
+      flip.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (front && back) {
+        (on ? front : back).setAttribute('aria-hidden', 'true');
+        (on ? back : front).removeAttribute('aria-hidden');
+      }
+    });
+  }
+
+  var RATIO = 3648 / 4706;     // width / height of the front photo
   var MIN = 120;
   var MAX = 340;
 

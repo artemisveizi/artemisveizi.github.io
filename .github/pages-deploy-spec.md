@@ -138,7 +138,7 @@ prints the live URL.
       Computer Modern body type, sans headings.
 - [ ] `https://artemisveizi.github.io/assets/main.css` loads and contains
       `@font-face` rules (14 of them) and `.pool` rules.
-- [ ] All 11 WOFF fonts under `assets/fonts/` and both `artemis-thesis` images return 200.
+- [ ] All 11 WOFF fonts under `assets/fonts/` and the `artemis-thesis` and `artemis-mountain` images return 200.
 - [ ] `/sitemap.xml` and `/robots.txt` still generate.
 - [ ] `/research-projects/` renders, and the thesis PDF opens.
 - [ ] Scroll to the bottom of the homepage: `pool ↓` appears, darkens as you

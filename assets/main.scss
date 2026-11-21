@@ -688,8 +688,72 @@ $h4-size: 1.1;    // 19.8px
     display: block;
     width: 100%;
     height: auto;
-    border-radius: 4px;
   }
+}
+
+/* Two-sided photo: click to turn it over. Both faces share one portrait frame
+   (the back is cropped to the front's aspect ratio), so the card never changes
+   shape mid-turn and the text beside it never reflows.
+
+   The front stays in normal flow and sizes the card; the back is laid over it,
+   pre-turned 180deg, and covers whatever box the front makes. */
+.photo-flip {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  perspective: 1400px;
+
+  &:focus-visible {
+    outline: 1px solid $grey-color;
+    outline-offset: 3px;
+  }
+}
+
+.photo-card {
+  position: relative;
+  display: block;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.photo-face {
+  display: block;
+  overflow: hidden;
+  border-radius: 4px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.photo-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: rotateY(180deg);
+
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.photo-flip.is-flipped .photo-card { transform: rotateY(180deg); }
+
+// A slight turn on hover, so the photo announces that it has another side.
+@media (hover: hover) {
+  .photo-flip:hover .photo-card            { transform: rotateY(-14deg); }
+  .photo-flip.is-flipped:hover .photo-card { transform: rotateY(166deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-card { transition: none; }
+  .photo-flip:hover .photo-card            { transform: none; }
+  .photo-flip.is-flipped:hover .photo-card { transform: rotateY(180deg); }
 }
 
 // Stacked on a phone: a ~210px column beside 18px serif leaves only a few words
