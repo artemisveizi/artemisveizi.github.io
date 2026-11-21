@@ -114,7 +114,7 @@ Notes on specific choices:
   production, and it is what Pages' own builder sets.
 - **`--baseurl` from `configure-pages`** resolves to `""` for a
   `<user>.github.io` repo, matching `_config.yml`. Harmless, and correct if the
-  site ever moves to a project repo or the planned `artemisveizi.io` domain.
+  site ever moves to a project repo.
 - **No `.nojekyll` needed.** The artifact upload publishes `_site` directly;
   nothing re-runs Jekyll on the output.
 
